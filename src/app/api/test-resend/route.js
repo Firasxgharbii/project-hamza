@@ -7,7 +7,7 @@ export async function GET() {
 
   const data = await resend.emails.send({
     from: "onboarding@resend.dev",
-    to: "firas.gharbi8485@gmail.com",
+    to: "mejdhamza25@gmail.com",
     subject: "TEST RESEND OK",
     html: "<strong>Si tu reçois ceci, Resend fonctionne.</strong>",
   });
