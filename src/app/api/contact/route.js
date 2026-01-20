@@ -1,68 +1,55 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req) {
   try {
     const { name, email, phone, message } = await req.json();
 
+    // ✅ Validation
     if (!name || !email || !message) {
-      return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400 }
+      );
     }
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: process.env.MAIL_FROM,
-      to: process.env.CONTACT_TO_EMAIL,
+    // ✅ Envoi email avec Resend
+    await resend.emails.send({
+      from: "Hamza Mejd <onboarding@resend.dev>", // OK pour test
+      to: ["mejdhamza25@gmail.com"],               // 👉 TON EMAIL
       replyTo: email,
-      subject: `New inquiry — ${name}`,
+      subject: `New contact message — ${name}`,
       html: `
-      <div style="background:#0b0b0b;padding:32px;font-family:Arial">
-        <div style="max-width:680px;margin:auto">
-          <h2 style="color:#fff;letter-spacing:4px;font-size:12px">
-            CONTACT · PORTFOLIO
-          </h2>
+        <div style="font-family:Arial;background:#0b0b0b;padding:30px;color:#fff">
+          <h2>New contact message</h2>
 
-          <h1 style="color:#fff;font-size:22px;margin-top:10px">
-            New inquiry received
-          </h1>
+          <p><b>Name:</b> ${name}</p>
+          <p><b>Email:</b> ${email}</p>
+          <p><b>Phone:</b> ${phone || "-"}</p>
 
-          <div style="background:#151515;border-radius:18px;padding:20px;margin-top:24px;color:#fff">
-            <p><b>Name:</b><br/>${name}</p>
-            <p><b>Email:</b><br/>${email}</p>
-            <p><b>Phone:</b><br/>${phone || "-"}</p>
-
-            <div style="margin-top:20px;padding:14px;border-radius:14px;background:#0b0b0b">
-              ${message}
-            </div>
-
-            <a href="mailto:${email}"
-              style="display:inline-block;margin-top:20px;
-              padding:12px 16px;background:#fff;color:#000;
-              text-decoration:none;border-radius:12px;
-              font-weight:800;letter-spacing:2px">
-              REPLY TO CLIENT
-            </a>
+          <div style="margin-top:20px;padding:15px;background:#151515;border-radius:10px">
+            ${message}
           </div>
 
-          <p style="margin-top:20px;color:#777;font-size:12px">
-            Sent from your website contact form
+          <p style="margin-top:30px;font-size:12px;color:#999">
+            Sent from hamzamejd.com contact form
           </p>
         </div>
-      </div>
       `,
     });
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    return new Response(
+      JSON.stringify({ success: true }),
+      { status: 200 }
+    );
 
-  } catch (err) {
-    return new Response(JSON.stringify({ error: "Server error" }), { status: 500 });
+  } catch (error) {
+    console.error("CONTACT API ERROR:", error);
+
+    return new Response(
+      JSON.stringify({ error: "Server error" }),
+      { status: 500 }
+    );
   }
 }
