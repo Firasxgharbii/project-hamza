@@ -11,7 +11,6 @@ export default function ContactPage() {
   async function onSubmit(e) {
     e.preventDefault();
     setStatus({ type: "", message: "" });
-    setLoading(true);
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -23,6 +22,17 @@ export default function ContactPage() {
       message: String(formData.get("message") || "").trim(),
     };
 
+    // ✅ Petite validation front
+    if (!payload.email || !payload.message) {
+      setStatus({
+        type: "error",
+        message: "Email and message are required.",
+      });
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -33,13 +43,14 @@ export default function ContactPage() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        throw new Error(data?.error || "Failed to send message.");
+        throw new Error(data?.error || "Failed to save message.");
       }
 
       setStatus({
         type: "success",
-        message: "Your message has been sent successfully.",
+        message: "✅ Message saved successfully!",
       });
+
       form.reset();
     } catch (err) {
       setStatus({
@@ -72,9 +83,7 @@ export default function ContactPage() {
               <div className={styles.infoRow}>
                 <div className={styles.icon}>✉</div>
                 <div className={styles.infoTitle}>
-                  <a href="mailto:mejdhamza25@gmail.com">
-                    mejdhamza25@gmail.com
-                  </a>
+                  <a href="mailto:mejdhamza25@gmail.com">mejdhamza25@gmail.com</a>
                 </div>
               </div>
             </div>
@@ -127,8 +136,12 @@ export default function ContactPage() {
                 />
               </label>
 
-              <button className={styles.button} type="submit" disabled={loading}>
-                {loading ? "Sending..." : "Send Message"}
+              <button
+                className={styles.button}
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Send Message"}
               </button>
 
               {status.message && (
@@ -136,8 +149,7 @@ export default function ContactPage() {
                   className={styles.note}
                   style={{
                     opacity: 1,
-                    color:
-                      status.type === "success" ? "#b7ffcc" : "#ffb7b7",
+                    color: status.type === "success" ? "#b7ffcc" : "#ffb7b7",
                   }}
                 >
                   {status.message}

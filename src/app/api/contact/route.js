@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+import mysql from "mysql2/promise";
 
 export const runtime = "nodejs";
 
@@ -18,56 +18,47 @@ export async function POST(req) {
       );
     }
 
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const TO = process.env.CONTACT_TO_EMAIL;
-    const FROM = process.env.MAIL_FROM;
+    // ✅ Variables BD (Vercel / .env.local)
+    const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
-    if (!RESEND_API_KEY || !TO || !FROM) {
+    if (!DB_HOST || !DB_USER || !DB_NAME) {
       return Response.json(
-        {
-          success: false,
-          error:
-            "Variables manquantes: RESEND_API_KEY / CONTACT_TO_EMAIL / MAIL_FROM",
-        },
+        { success: false, error: "Variables BD manquantes: DB_HOST / DB_USER / DB_NAME" },
         { status: 500 }
       );
     }
 
-    const resend = new Resend(RESEND_API_KEY);
-
-    const subject = `Nouveau message (hamzamejd.com) — ${name || "Sans nom"}`;
-
-    const html = `
-      <div style="font-family:Arial,sans-serif;line-height:1.5">
-        <h2>Nouveau message via hamzamejd.com</h2>
-        <p><b>Nom:</b> ${escapeHtml(name || "-")}</p>
-        <p><b>Email:</b> ${escapeHtml(email)}</p>
-        <p><b>Téléphone:</b> ${escapeHtml(phone || "-")}</p>
-        <p><b>Message:</b></p>
-        <pre style="white-space:pre-wrap;background:#f6f6f6;padding:12px;border-radius:8px">${escapeHtml(
-          message
-        )}</pre>
-      </div>
-    `;
-
-    // ✅ IMPORTANT: Resend retourne { data, error }
-    const { data, error } = await resend.emails.send({
-      from: FROM,
-      to: [TO],
-      replyTo: email,
-      subject,
-      html,
+    // ✅ Connexion BD
+    const connection = await mysql.createConnection({
+      host: DB_HOST,
+      user: DB_USER,
+      password: DB_PASSWORD,
+      database: DB_NAME,
     });
 
-    if (error) {
-      console.error("RESEND ERROR:", error);
-      return Response.json(
-        { success: false, error: error.message || "Resend error" },
-        { status: 500 }
-      );
-    }
+    // ✅ IP & User-Agent (utile pour logs / spam)
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      null;
 
-    return Response.json({ success: true, id: data?.id }, { status: 200 });
+    const userAgent = req.headers.get("user-agent") || null;
+
+    // ✅ Insert dans la table
+    const [result] = await connection.execute(
+      `
+      INSERT INTO contact_messages (name, email, phone, message, ip, user_agent)
+      VALUES (?, ?, ?, ?, ?, ?)
+      `,
+      [name || null, email, phone || null, message, ip, userAgent]
+    );
+
+    await connection.end();
+
+    return Response.json(
+      { success: true, id: result?.insertId },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("API /contact error:", err);
     return Response.json(
@@ -75,13 +66,4 @@ export async function POST(req) {
       { status: 500 }
     );
   }
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
 }
