@@ -1,14 +1,15 @@
 import { Resend } from "resend";
 
-export const runtime = "nodejs"; // important sur Vercel
+export const runtime = "nodejs";
 
 export async function POST(req) {
   try {
     const body = await req.json();
-    const name = (body?.name || "").trim();
-    const email = (body?.email || "").trim();
-    const phone = (body?.phone || "").trim();
-    const message = (body?.message || "").trim();
+
+    const name = String(body?.name || "").trim();
+    const email = String(body?.email || "").trim();
+    const phone = String(body?.phone || "").trim();
+    const message = String(body?.message || "").trim();
 
     if (!email || !message) {
       return Response.json(
@@ -49,21 +50,15 @@ export async function POST(req) {
       </div>
     `;
 
-    // ✅ Format "Name <email@domain>"
-    const fromFormatted = FROM.includes("<")
-      ? FROM
-      : `Hamza Mejd <${FROM}>`;
-
-    // ✅ Resend attend souvent to: [ ... ]
+    // ✅ IMPORTANT: Resend retourne { data, error }
     const { data, error } = await resend.emails.send({
-      from: fromFormatted,
+      from: FROM,
       to: [TO],
       replyTo: email,
       subject,
       html,
     });
 
-    // ✅ IMPORTANT : si Resend refuse, on renvoie une vraie erreur
     if (error) {
       console.error("RESEND ERROR:", error);
       return Response.json(
