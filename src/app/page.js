@@ -20,8 +20,7 @@ const PROJECTS = [
     thumb: "/projects/p1.jpeg",
     href: "/contact",
     previewVideo:
-  "https://res.cloudinary.com/dko1fpcic/video/upload/v1768872409/Yours1_fi1fpj.mp4",
-
+      "https://res.cloudinary.com/dko1fpcic/video/upload/v1768872409/Yours1_fi1fpj.mp4",
   },
   {
     id: 2,
@@ -29,7 +28,8 @@ const PROJECTS = [
     category: "FILMS",
     thumb: "/projects/s3.jpg",
     href: "/contact",
-    previewVideo: "https://res.cloudinary.com/dko1fpcic/video/upload/Alterer_ngdzuh.mp4",
+    previewVideo:
+      "https://res.cloudinary.com/dko1fpcic/video/upload/Alterer_ngdzuh.mp4",
   },
   {
     id: 3,
@@ -37,42 +37,98 @@ const PROJECTS = [
     category: "FILMS",
     thumb: "/projects/p3.jpeg",
     href: "/contact",
-    previewVideo: "https://res.cloudinary.com/dko1fpcic/video/upload/v1768872573/Salope2_txelgt.mp4",
+    previewVideo:
+      "https://res.cloudinary.com/dko1fpcic/video/upload/v1768872573/Salope2_txelgt.mp4",
   },
 ];
 
 function getStillMeta(id) {
   if (id >= 1 && id <= 3)
-    return { title: "ALTÉRER", role: "DOP / COLORIST", alt: "Altérer", filterCategory: "FILMS" };
+    return {
+      title: "ALTÉRER",
+      role: "DOP / COLORIST",
+      alt: "Altérer",
+      filterCategory: "FILMS",
+    };
 
   if (id >= 4 && id <= 6)
-    return { title: "YOURS", role: "DOP / COLORIST", alt: "Yours", filterCategory: "FILMS" };
+    return {
+      title: "YOURS",
+      role: "DOP / COLORIST",
+      alt: "Yours",
+      filterCategory: "FILMS",
+    };
 
   if (id >= 7 && id <= 9)
-    return { title: "HOMMAGE", role: "DOP / COLORIST", alt: "Hommage", filterCategory: "FILMS" };
+    return {
+      title: "HOMMAGE",
+      role: "DOP / COLORIST",
+      alt: "Hommage",
+      filterCategory: "FILMS",
+    };
 
   if (id >= 10 && id <= 12)
-    return { title: "ELLE", role: "DOP / COLORIST", alt: "Elle", filterCategory: "FILMS" };
+    return {
+      title: "ELLE",
+      role: "DOP / COLORIST",
+      alt: "Elle",
+      filterCategory: "FILMS",
+    };
 
   if (id >= 13 && id <= 15)
-    return { title: "SALOPE", role: "DOP / COLORIST", alt: "Salope", filterCategory: "FILMS" };
+    return {
+      title: "SALOPE",
+      role: "DOP / COLORIST",
+      alt: "Salope",
+      filterCategory: "FILMS",
+    };
 
   if (id >= 16 && id <= 18)
-    return { title: "AVOIR 30 ANS", role: "DOP / COLORIST", alt: "Avoir 30 ans", filterCategory: "FILMS" };
+    return {
+      title: "AVOIR 30 ANS",
+      role: "DOP / COLORIST",
+      alt: "Avoir 30 ans",
+      filterCategory: "FILMS",
+    };
 
   if (id >= 19 && id <= 21)
-    return { title: "DOCUMENTARY", role: "DOP / COLORIST", alt: "Documentary", filterCategory: "COMMERCIAL" };
+    return {
+      title: "DOCUMENTARY",
+      role: "DOP / COLORIST",
+      alt: "Documentary",
+      filterCategory: "COMMERCIAL",
+    };
 
   if (id >= 22 && id <= 24)
-    return { title: "AD GURU", role: "FILMMAKER / EDITOR", alt: "Ad Guru", filterCategory: "COMMERCIAL" };
+    return {
+      title: "AD GURU",
+      role: "FILMMAKER / EDITOR",
+      alt: "Ad Guru",
+      filterCategory: "COMMERCIAL",
+    };
 
   if (id >= 25 && id <= 27)
-    return { title: "AD CPHOUCA", role: "COLORIST", alt: "Ad Cphouca", filterCategory: "COMMERCIAL" };
+    return {
+      title: "AD CPHOUCA",
+      role: "COLORIST",
+      alt: "Ad Cphouca",
+      filterCategory: "COMMERCIAL",
+    };
 
   if (id >= 28 && id <= 30)
-    return { title: "INSIDE", role: "COLORIST / LIGHTING", alt: "Inside", filterCategory: "MUSIC VIDEOS" };
+    return {
+      title: "INSIDE",
+      role: "COLORIST / LIGHTING",
+      alt: "Inside",
+      filterCategory: "MUSIC VIDEOS",
+    };
 
-  return { title: `STILL ${id}`, role: "DOP / COLORIST", alt: `Still ${id}`, filterCategory: "FILMS" };
+  return {
+    title: `STILL ${id}`,
+    role: "DOP / COLORIST",
+    alt: `Still ${id}`,
+    filterCategory: "FILMS",
+  };
 }
 
 const STILLS = Array.from({ length: 30 }).map((_, i) => {
@@ -92,7 +148,7 @@ const STILLS = Array.from({ length: 30 }).map((_, i) => {
    PAGE
 =========================== */
 
-export default function Home() {
+export default function HomeClient() {
   const videoRef = useRef(null);
 
   const [activeFilter, setActiveFilter] = useState("ALL");
@@ -100,7 +156,9 @@ export default function Home() {
   const [volume, setVolume] = useState(0);
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [videoSrc, setVideoSrc] = useState("https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/version_pc_nws1e5.mp4");
+  const [videoSrc, setVideoSrc] = useState(
+    "https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/version_pc_nws1e5.mp4"
+  );
 
   const PINNED_STILLS = [1, 2, 3];
   const [favorites, setFavorites] = useState({});
@@ -111,10 +169,8 @@ export default function Home() {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // ✅ titre dynamique (ALL / FILMS / COMMERCIAL / MUSIC VIDEOS)
   const sectionTitle = activeFilter;
 
-  // load favorites
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("hm_favorites") || "{}");
@@ -124,7 +180,6 @@ export default function Home() {
     }
   }, []);
 
-  // force pinned stills true by default
   useEffect(() => {
     setFavorites((prev) => {
       const next = { ...prev };
@@ -136,7 +191,6 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // save favorites
   useEffect(() => {
     try {
       localStorage.setItem("hm_favorites", JSON.stringify(favorites));
@@ -147,11 +201,14 @@ export default function Home() {
     setFavorites((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // ✅ pick hero video
   useEffect(() => {
     const pickVideo = () => {
       const isMobile = window.matchMedia("(max-width: 820px)").matches;
-      setVideoSrc(isMobile ? "https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/Version_mb_1920_nlju1q.mp4" : "https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/version_pc_nws1e5.mp4");
+      setVideoSrc(
+        isMobile
+          ? "https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/Version_mb_1920_nlju1q.mp4"
+          : "https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/version_pc_nws1e5.mp4"
+      );
     };
 
     pickVideo();
@@ -159,7 +216,6 @@ export default function Home() {
     return () => window.removeEventListener("resize", pickVideo);
   }, []);
 
-  // ✅ autoplay when src changes
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -174,13 +230,11 @@ export default function Home() {
     setVolume(0);
   }, [videoSrc]);
 
-  // ✅ filter projects
   const filteredProjects = useMemo(() => {
     if (activeFilter === "ALL") return PROJECTS.slice(0, 12);
     return PROJECTS.filter((p) => p.category === activeFilter);
   }, [activeFilter]);
 
-  // ✅ pinned stills first
   const orderedStills = useMemo(() => {
     const pinned = STILLS.filter((s) => PINNED_STILLS.includes(s.id));
     const rest = STILLS.filter((s) => !PINNED_STILLS.includes(s.id));
@@ -188,7 +242,6 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ filter stills (sans changer les titres)
   const filteredStills = useMemo(() => {
     if (activeFilter === "ALL") return orderedStills;
     return orderedStills.filter((s) => s.filterCategory === activeFilter);
@@ -220,7 +273,6 @@ export default function Home() {
 
   const toggleMute = () => handleVolume(volume === 0 ? 0.35 : 0);
 
-  // close menu outside click
   useEffect(() => {
     if (!menuOpen) return;
     const close = () => setMenuOpen(false);
@@ -232,16 +284,25 @@ export default function Home() {
     <div className={styles.page}>
       {/* NAVBAR */}
       <header className={styles.topbar}>
-        <Link href="/" className={styles.brand} onClick={() => setMenuOpen(false)}>
-          {/* ✅ OFF LOGO */}
+        <Link
+          href="/"
+          className={styles.brand}
+          onClick={() => setMenuOpen(false)}
+        >
           <span className={styles.logoWrap} aria-hidden="true">
-            <Image src="/OFF.jpeg" alt="OFF" width={32} height={32} className={styles.logoImg} priority />
+            <Image
+              src="/OFF.jpeg"
+              alt="OFF"
+              width={32}
+              height={32}
+              className={styles.logoImg}
+              priority
+            />
           </span>
 
           <span className={styles.brandText}>HAMZA MEJD</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className={styles.nav} aria-label="Primary navigation">
           <button
             type="button"
@@ -258,14 +319,16 @@ export default function Home() {
             About
           </Link>
 
-          <Link className={`${styles.navLink} ${styles.navCta}`} href="/contact">
+          <Link
+            className={`${styles.navLink} ${styles.navCta}`}
+            href="/contact"
+          >
             Contact
           </Link>
 
           <span className={styles.navGlow} aria-hidden="true" />
         </nav>
 
-        {/* Mobile menu button */}
         <button
           className={styles.kebab}
           type="button"
@@ -281,9 +344,12 @@ export default function Home() {
           <span />
         </button>
 
-        {/* Mobile dropdown */}
         {menuOpen && (
-          <div className={styles.mobileMenu} role="menu" onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.mobileMenu}
+            role="menu"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               className={styles.mobileLink}
@@ -295,7 +361,11 @@ export default function Home() {
               Work
             </button>
 
-            <Link className={styles.mobileLink} href="/about" onClick={() => setMenuOpen(false)}>
+            <Link
+              className={styles.mobileLink}
+              href="/about"
+              onClick={() => setMenuOpen(false)}
+            >
               About
             </Link>
 
@@ -312,7 +382,6 @@ export default function Home() {
 
       {/* HERO */}
       <main className={styles.hero}>
-        {/* FILTER BAR */}
         <div className={styles.filtersWrap}>
           <div className={styles.filters} role="tablist" aria-label="Project filters">
             {FILTERS.map((f) => (
@@ -321,7 +390,9 @@ export default function Home() {
                 type="button"
                 role="tab"
                 aria-selected={activeFilter === f}
-                className={`${styles.filterBtn} ${activeFilter === f ? styles.filterActive : ""}`}
+                className={`${styles.filterBtn} ${
+                  activeFilter === f ? styles.filterActive : ""
+                }`}
                 onClick={() => setActiveFilter(f)}
               >
                 {f}
@@ -330,20 +401,31 @@ export default function Home() {
           </div>
         </div>
 
-        {/* VIDEO */}
-        <video ref={videoRef} className={styles.video} autoPlay muted loop playsInline preload="auto" key={videoSrc}>
+        <video
+          ref={videoRef}
+          className={styles.video}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          key={videoSrc}
+        >
           <source src={videoSrc} type="video/mp4" />
         </video>
 
         <div className={styles.overlay} />
 
-        {/* HERO TEXT */}
         <div className={styles.heroText}>
           <h1 className={styles.h1}>Hamza Mejd</h1>
           <p className={styles.sub}>Filmmaker & Director of Photography</p>
 
           <div className={styles.heroCtas}>
-            <button type="button" className={styles.primaryBtn} onClick={scrollToStills}>
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              onClick={scrollToStills}
+            >
               View Work
             </button>
 
@@ -353,9 +435,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Controls */}
         <div className={styles.controls}>
-          <button onClick={togglePlay} className={styles.controlBtn} aria-label="Play / Pause" type="button">
+          <button
+            onClick={togglePlay}
+            className={styles.controlBtn}
+            aria-label="Play / Pause"
+            type="button"
+          >
             {isPlaying ? (
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <rect x="6" y="5" width="4" height="14" />
@@ -368,7 +454,12 @@ export default function Home() {
             )}
           </button>
 
-          <button onClick={toggleMute} className={styles.controlBtn} aria-label="Mute / Unmute" type="button">
+          <button
+            onClick={toggleMute}
+            className={styles.controlBtn}
+            aria-label="Mute / Unmute"
+            type="button"
+          >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 9v6h4l5 5V4L8 9H4z" />
             </svg>
@@ -414,7 +505,14 @@ export default function Home() {
                 }}
               >
                 <img src={p.thumb} alt={p.title} loading="lazy" />
-                <video className={styles.previewVid} muted playsInline loop preload="metadata">
+
+                <video
+                  className={styles.previewVid}
+                  muted
+                  playsInline
+                  loop
+                  preload="metadata"
+                >
                   <source src={p.previewVideo} type="video/mp4" />
                 </video>
 
@@ -423,7 +521,11 @@ export default function Home() {
                 <button
                   type="button"
                   className={styles.favBtn}
-                  aria-label={favorites[`project-${p.id}`] ? "Remove favorite" : "Add favorite"}
+                  aria-label={
+                    favorites[`project-${p.id}`]
+                      ? "Remove favorite"
+                      : "Add favorite"
+                  }
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -459,7 +561,9 @@ export default function Home() {
                 <button
                   type="button"
                   className={styles.favBtn}
-                  aria-label={favorites[`still-${s.id}`] ? "Remove favorite" : "Add favorite"}
+                  aria-label={
+                    favorites[`still-${s.id}`] ? "Remove favorite" : "Add favorite"
+                  }
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

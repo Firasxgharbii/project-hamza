@@ -1,83 +1,76 @@
 import { Resend } from "resend";
 
-export const runtime = "nodejs"; // IMPORTANT (pas Edge)
+export const runtime = "nodejs"; // important sur Vercel
 
 export async function POST(req) {
   try {
-    const { name, email, phone, message } = await req.json();
+    const body = await req.json();
+    const name = (body?.name || "").trim();
+    const email = (body?.email || "").trim();
+    const phone = (body?.phone || "").trim();
+    const message = (body?.message || "").trim();
 
-    if (!name || !email || !message) {
-      return new Response(JSON.stringify({ error: "Missing fields" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+    if (!email || !message) {
+      return Response.json(
+        { success: false, error: "Email et message sont obligatoires." },
+        { status: 400 }
+      );
     }
 
-    // Variables requises
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const MAIL_FROM = process.env.MAIL_FROM;
-    const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL;
+    const TO = process.env.CONTACT_TO_EMAIL;
+    const FROM = process.env.MAIL_FROM;
 
-    if (!RESEND_API_KEY || !MAIL_FROM || !CONTACT_TO_EMAIL) {
-      return new Response(
-        JSON.stringify({ error: "Missing server env variables" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+    if (!RESEND_API_KEY || !TO || !FROM) {
+      return Response.json(
+        {
+          success: false,
+          error: "Variables manquantes: RESEND_API_KEY / CONTACT_TO_EMAIL / MAIL_FROM",
+        },
+        { status: 500 }
       );
     }
 
     const resend = new Resend(RESEND_API_KEY);
 
-    await resend.emails.send({
-      from: MAIL_FROM, // ex: "Hamza Mejd <onboarding@resend.dev>"
-      to: CONTACT_TO_EMAIL, // ex: "mejdhamza25@gmail.com"
-      replyTo: email,
-      subject: `New inquiry — ${name}`,
-      html: `
-        <div style="background:#0b0b0b;padding:32px;font-family:Arial">
-          <div style="max-width:680px;margin:auto">
-            <h2 style="color:#fff;letter-spacing:4px;font-size:12px">
-              CONTACT · PORTFOLIO
-            </h2>
+    const subject = `Nouveau message (hamzamejd.com) — ${name || "Sans nom"}`;
 
-            <h1 style="color:#fff;font-size:22px;margin-top:10px">
-              New inquiry received
-            </h1>
+    const html = `
+      <div style="font-family:Arial,sans-serif;line-height:1.5">
+        <h2>Nouveau message via hamzamejd.com</h2>
+        <p><b>Nom:</b> ${escapeHtml(name || "-")}</p>
+        <p><b>Email:</b> ${escapeHtml(email)}</p>
+        <p><b>Téléphone:</b> ${escapeHtml(phone || "-")}</p>
+        <p><b>Message:</b></p>
+        <pre style="white-space:pre-wrap;background:#f6f6f6;padding:12px;border-radius:8px">${escapeHtml(
+          message
+        )}</pre>
+      </div>
+    `;
 
-            <div style="background:#151515;border-radius:18px;padding:20px;margin-top:24px;color:#fff">
-              <p><b>Name:</b><br/>${name}</p>
-              <p><b>Email:</b><br/>${email}</p>
-              <p><b>Phone:</b><br/>${phone || "-"}</p>
-
-              <div style="margin-top:20px;padding:14px;border-radius:14px;background:#0b0b0b">
-                ${String(message).replace(/\n/g, "<br/>")}
-              </div>
-
-              <a href="mailto:${email}"
-                style="display:inline-block;margin-top:20px;
-                padding:12px 16px;background:#fff;color:#000;
-                text-decoration:none;border-radius:12px;
-                font-weight:800;letter-spacing:2px">
-                REPLY TO CLIENT
-              </a>
-            </div>
-
-            <p style="margin-top:20px;color:#777;font-size:12px">
-              Sent from your website contact form
-            </p>
-          </div>
-        </div>
-      `,
+    const result = await resend.emails.send({
+      from: FROM,          // ex: onboarding@resend.dev (test) ou contact@hamzamejd.com (prod)
+      to: TO,              // ex: mejdhamza25@gmail.com
+      replyTo: email,      // quand tu réponds, ça répond au client
+      subject,
+      html,
     });
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json({ success: true, result }, { status: 200 });
   } catch (err) {
     console.error("API /contact error:", err);
-    return new Response(JSON.stringify({ error: "Server error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json(
+      { success: false, error: err?.message || "Server error" },
+      { status: 500 }
+    );
   }
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
