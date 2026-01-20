@@ -1,21 +1,35 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const runtime = "nodejs"; // IMPORTANT (pas Edge)
 
 export async function POST(req) {
   try {
     const { name, email, phone, message } = await req.json();
 
     if (!name || !email || !message) {
+      return new Response(JSON.stringify({ error: "Missing fields" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Variables requises
+    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    const MAIL_FROM = process.env.MAIL_FROM;
+    const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL;
+
+    if (!RESEND_API_KEY || !MAIL_FROM || !CONTACT_TO_EMAIL) {
       return new Response(
-        JSON.stringify({ error: "Missing fields" }),
-        { status: 400 }
+        JSON.stringify({ error: "Missing server env variables" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
+    const resend = new Resend(RESEND_API_KEY);
+
     await resend.emails.send({
-      from: "Hamza Mejd <onboarding@resend.dev>",
-      to: ["firassgharbi@gmail.com"], // ⬅️ TON EMAIL
+      from: MAIL_FROM, // ex: "Hamza Mejd <onboarding@resend.dev>"
+      to: CONTACT_TO_EMAIL, // ex: "mejdhamza25@gmail.com"
       replyTo: email,
       subject: `New inquiry — ${name}`,
       html: `
@@ -35,8 +49,16 @@ export async function POST(req) {
               <p><b>Phone:</b><br/>${phone || "-"}</p>
 
               <div style="margin-top:20px;padding:14px;border-radius:14px;background:#0b0b0b">
-                ${message}
+                ${String(message).replace(/\n/g, "<br/>")}
               </div>
+
+              <a href="mailto:${email}"
+                style="display:inline-block;margin-top:20px;
+                padding:12px 16px;background:#fff;color:#000;
+                text-decoration:none;border-radius:12px;
+                font-weight:800;letter-spacing:2px">
+                REPLY TO CLIENT
+              </a>
             </div>
 
             <p style="margin-top:20px;color:#777;font-size:12px">
@@ -47,17 +69,15 @@ export async function POST(req) {
       `,
     });
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      { status: 200 }
-    );
-
-  } catch (error) {
-    console.error("CONTACT API ERROR:", error);
-
-    return new Response(
-      JSON.stringify({ error: "Server error" }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    console.error("API /contact error:", err);
+    return new Response(JSON.stringify({ error: "Server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
