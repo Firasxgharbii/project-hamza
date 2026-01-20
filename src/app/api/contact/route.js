@@ -6,35 +6,43 @@ export async function POST(req) {
   try {
     const { name, email, phone, message } = await req.json();
 
-    // ✅ Validation
     if (!name || !email || !message) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ error: "Missing fields" }),
         { status: 400 }
       );
     }
 
-    // ✅ Envoi email avec Resend
     await resend.emails.send({
-      from: "Hamza Mejd <onboarding@resend.dev>", // OK pour test
-      to: ["mejdhamza25@gmail.com"],               // 👉 TON EMAIL
+      from: "Hamza Mejd <onboarding@resend.dev>",
+      to: ["firassgharbi@gmail.com"], // ⬅️ TON EMAIL
       replyTo: email,
-      subject: `New contact message — ${name}`,
+      subject: `New inquiry — ${name}`,
       html: `
-        <div style="font-family:Arial;background:#0b0b0b;padding:30px;color:#fff">
-          <h2>New contact message</h2>
+        <div style="background:#0b0b0b;padding:32px;font-family:Arial">
+          <div style="max-width:680px;margin:auto">
+            <h2 style="color:#fff;letter-spacing:4px;font-size:12px">
+              CONTACT · PORTFOLIO
+            </h2>
 
-          <p><b>Name:</b> ${name}</p>
-          <p><b>Email:</b> ${email}</p>
-          <p><b>Phone:</b> ${phone || "-"}</p>
+            <h1 style="color:#fff;font-size:22px;margin-top:10px">
+              New inquiry received
+            </h1>
 
-          <div style="margin-top:20px;padding:15px;background:#151515;border-radius:10px">
-            ${message}
+            <div style="background:#151515;border-radius:18px;padding:20px;margin-top:24px;color:#fff">
+              <p><b>Name:</b><br/>${name}</p>
+              <p><b>Email:</b><br/>${email}</p>
+              <p><b>Phone:</b><br/>${phone || "-"}</p>
+
+              <div style="margin-top:20px;padding:14px;border-radius:14px;background:#0b0b0b">
+                ${message}
+              </div>
+            </div>
+
+            <p style="margin-top:20px;color:#777;font-size:12px">
+              Sent from your website contact form
+            </p>
           </div>
-
-          <p style="margin-top:30px;font-size:12px;color:#999">
-            Sent from hamzamejd.com contact form
-          </p>
         </div>
       `,
     });
