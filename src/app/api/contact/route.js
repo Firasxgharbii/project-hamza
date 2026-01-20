@@ -25,7 +25,8 @@ export async function POST(req) {
       return Response.json(
         {
           success: false,
-          error: "Variables manquantes: RESEND_API_KEY / CONTACT_TO_EMAIL / MAIL_FROM",
+          error:
+            "Variables manquantes: RESEND_API_KEY / CONTACT_TO_EMAIL / MAIL_FROM",
         },
         { status: 500 }
       );
@@ -48,15 +49,30 @@ export async function POST(req) {
       </div>
     `;
 
-    const result = await resend.emails.send({
-      from: FROM,          // ex: onboarding@resend.dev (test) ou contact@hamzamejd.com (prod)
-      to: TO,              // ex: mejdhamza25@gmail.com
-      replyTo: email,      // quand tu réponds, ça répond au client
+    // ✅ Format "Name <email@domain>"
+    const fromFormatted = FROM.includes("<")
+      ? FROM
+      : `Hamza Mejd <${FROM}>`;
+
+    // ✅ Resend attend souvent to: [ ... ]
+    const { data, error } = await resend.emails.send({
+      from: fromFormatted,
+      to: [TO],
+      replyTo: email,
       subject,
       html,
     });
 
-    return Response.json({ success: true, result }, { status: 200 });
+    // ✅ IMPORTANT : si Resend refuse, on renvoie une vraie erreur
+    if (error) {
+      console.error("RESEND ERROR:", error);
+      return Response.json(
+        { success: false, error: error.message || "Resend error" },
+        { status: 500 }
+      );
+    }
+
+    return Response.json({ success: true, id: data?.id }, { status: 200 });
   } catch (err) {
     console.error("API /contact error:", err);
     return Response.json(
