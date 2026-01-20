@@ -1,0 +1,115 @@
+.wrap{
+  width: 100%;
+  padding: 22px 28px 10px;
+  background: #000;
+  color: #fff;
+}
+
+/* Filters */
+.filters{
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 4px 0 18px;
+}
+
+.filterBtn{
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  color: rgba(255,255,255,0.72);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+
+  padding: 8px 0;
+  transition: color .2s ease, transform .2s ease, opacity .2s ease;
+}
+
+.filterBtn:hover{
+  color: rgba(255,255,255,0.95);
+  transform: translateY(-1px);
+}
+
+.active{
+  color: #fff;
+  font-weight: 900;
+}
+
+/* Grid */
+.grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+
+/* Card */
+.card{
+  cursor: pointer;
+}
+
+.thumb{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 2px;
+  overflow: hidden;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+}
+
+.thumb::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.05));
+}
+
+.cardTitle{
+  position: absolute;
+  left: 18px;
+  bottom: 16px;
+  z-index: 2;
+
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+
+  text-shadow: 0 18px 40px rgba(0,0,0,0.75);
+}
+
+/* Small badge text under title (like VIEW PROJECT) */
+.badge{
+  position: absolute;
+  left: 18px;
+  bottom: 10px;
+  transform: translateY(38px);
+  z-index: 2;
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  color: rgba(255,255,255,0.9);
+}
+
+@media (max-width: 1100px){
+  .grid{ grid-template-columns: repeat(2, 1fr); }
+  .cardTitle{ font-size: 24px; }
+}
+
+@media (max-width: 640px){
+  .wrap{ padding: 18px 14px 6px; }
+  .filters{ gap: 14px; flex-wrap: wrap; }
+  .grid{ grid-template-columns: 1fr; }
+  .cardTitle{ font-size: 22px; }
+}
