@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect } from "react";
 import styles from "./MissionVision.module.css";
 
 export default function MissionVision({
@@ -8,6 +11,20 @@ export default function MissionVision({
   visionTitle = "Our Vision",
   visionText = "To be a leader in visual storytelling, delivering premium craft, emotion, and rhythm in every project.",
 }) {
+  // 🔒 bloque clic droit sur toute la section (optionnel mais utile)
+  useEffect(() => {
+    const prevent = (e) => e.preventDefault();
+    document.addEventListener("contextmenu", prevent);
+    return () => document.removeEventListener("contextmenu", prevent);
+  }, []);
+
+  // 🔒 props anti-save pour l'image (drag + clic droit)
+  const noSaveImgProps = {
+    draggable: false,
+    onContextMenu: (e) => e.preventDefault(),
+    onDragStart: (e) => e.preventDefault(),
+  };
+
   return (
     <section className={styles.section} aria-label="Mission and Vision">
       <div className={styles.inner}>
@@ -20,6 +37,15 @@ export default function MissionVision({
             className={styles.img}
             sizes="(min-width: 1000px) 460px, 90vw"
             priority
+            {...noSaveImgProps}
+          />
+
+          {/* 🔒 couche invisible au-dessus de l'image */}
+          <div
+            className={styles.noSaveLayer}
+            onContextMenu={(e) => e.preventDefault()}
+            onMouseDown={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
           />
         </div>
 

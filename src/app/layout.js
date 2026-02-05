@@ -2,6 +2,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 
+// ✅ AJOUTE ÇA
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -26,13 +29,12 @@ export const metadata = {
 
   openGraph: {
     title: "Hamza Mejd – Director & Cinematographer",
-    description:
-      "Official website of Hamza Mejd. Films, portfolio and contact.",
+    description: "Official website of Hamza Mejd. Films, portfolio and contact.",
     url: "https://hamzamejd.com",
     siteName: "Hamza Mejd",
     images: [
       {
-        url: "/og.jpg", // ✅ mets une image og.jpg dans /public
+        url: "/og.jpg",
         width: 1200,
         height: 630,
         alt: "Hamza Mejd – Official Website",
@@ -45,15 +47,14 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Hamza Mejd – Director & Cinematographer",
-    description:
-      "Official website of Hamza Mejd. Films, portfolio and contact.",
-    images: ["/og.jpg"], // ✅ /public/og.jpg
+    description: "Official website of Hamza Mejd. Films, portfolio and contact.",
+    images: ["/og.jpg"],
   },
 
   icons: {
-    icon: "/favicon.ico", // ✅ /public/favicon.ico
+    icon: "/favicon.ico",
     shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png", // optionnel
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -69,6 +70,9 @@ export default function RootLayout({ children }) {
 
         {/* ✅ Contenu des pages */}
         <main style={{ paddingTop: "76px" }}>{children}</main>
+
+        {/* ✅ Vercel Speed Insights */}
+        <SpeedInsights />
       </body>
     </html>
   );

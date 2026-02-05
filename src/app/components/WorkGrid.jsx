@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import styles from "./WorkGrid.module.css";
 
 const WORKS = [
@@ -7,7 +8,7 @@ const WORKS = [
     id: "sting",
     category: "commercial",
     title: "STING ENERGY PIGEON",
-    image: "/works/sting.jpg", // ✅ mets l'image dans /public/works/sting.jpg
+    image: "/works/sting.jpg",
     badge: "",
   },
   {
@@ -24,7 +25,6 @@ const WORKS = [
     image: "/works/coca.jpg",
     badge: "",
   },
-  // Ajoute d’autres items ici...
 ];
 
 const FILTERS = [
@@ -35,17 +35,25 @@ const FILTERS = [
 ];
 
 export default function WorkGrid() {
-  // 🔹 Version UI simple (pas de filtre JS pour l’instant)
-  // Si tu veux filtrer après, je te le fais.
+
+  /* 🔒 Bloque clic droit sur cette section */
+  useEffect(() => {
+    const prevent = (e) => e.preventDefault();
+    document.addEventListener("contextmenu", prevent);
+    return () => document.removeEventListener("contextmenu", prevent);
+  }, []);
+
   return (
     <section className={styles.wrap}>
-      {/* Top filters */}
+      {/* Filters */}
       <div className={styles.filters}>
         {FILTERS.map((f) => (
           <button
             key={f.key}
             type="button"
-            className={`${styles.filterBtn} ${f.key === "all" ? styles.active : ""}`}
+            className={`${styles.filterBtn} ${
+              f.key === "all" ? styles.active : ""
+            }`}
           >
             {f.label}
           </button>
@@ -60,11 +68,14 @@ export default function WorkGrid() {
               className={styles.thumb}
               style={{ backgroundImage: `url("${w.image}")` }}
             >
-              {/* Overlay title */}
+              {/* 🔒 couche invisible anti-save */}
+              <div className={styles.noSaveLayer} />
+
+              {/* Title */}
               <div className={styles.cardTitle}>{w.title}</div>
 
-              {/* Small badge (ex: VIEW PROJECT) */}
-              {w.badge ? <div className={styles.badge}>{w.badge}</div> : null}
+              {/* Badge */}
+              {w.badge && <div className={styles.badge}>{w.badge}</div>}
             </div>
           </article>
         ))}

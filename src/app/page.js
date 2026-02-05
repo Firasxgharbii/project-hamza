@@ -151,8 +151,12 @@ const STILLS = Array.from({ length: 30 }).map((_, i) => {
 export default function HomeClient() {
   const videoRef = useRef(null);
 
+  const DEFAULT_VOL = 0.35;
+
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [isPlaying, setIsPlaying] = useState(true);
+
+  // volume state juste pour savoir si muet ou non
   const [volume, setVolume] = useState(0);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -216,6 +220,7 @@ export default function HomeClient() {
     return () => window.removeEventListener("resize", pickVideo);
   }, []);
 
+  // AUTOPLAY (mute obligatoire)
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -260,18 +265,24 @@ export default function HomeClient() {
     }
   };
 
-  const handleVolume = (val) => {
+  // UN SEUL bouton MUTE/UNMUTE
+  const toggleMute = async () => {
     const v = videoRef.current;
-    const newVol = Number(val);
-
-    setVolume(newVol);
     if (!v) return;
 
-    v.volume = newVol;
-    v.muted = newVol === 0;
-  };
+    if (v.muted || v.volume === 0) {
+      v.muted = false;
+      v.volume = DEFAULT_VOL;
+      setVolume(DEFAULT_VOL);
 
-  const toggleMute = () => handleVolume(volume === 0 ? 0.35 : 0);
+      await v.play().catch(() => {});
+      setIsPlaying(true);
+    } else {
+      v.volume = 0;
+      v.muted = true;
+      setVolume(0);
+    }
+  };
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -279,6 +290,13 @@ export default function HomeClient() {
     window.addEventListener("click", close);
     return () => window.removeEventListener("click", close);
   }, [menuOpen]);
+
+  // helpers anti-save
+  const noSaveProps = {
+    draggable: false,
+    onContextMenu: (e) => e.preventDefault(),
+    onDragStart: (e) => e.preventDefault(),
+  };
 
   return (
     <div className={styles.page}>
@@ -383,7 +401,11 @@ export default function HomeClient() {
       {/* HERO */}
       <main className={styles.hero}>
         <div className={styles.filtersWrap}>
-          <div className={styles.filters} role="tablist" aria-label="Project filters">
+          <div
+            className={styles.filters}
+            role="tablist"
+            aria-label="Project filters"
+          >
             {FILTERS.map((f) => (
               <button
                 key={f}
@@ -457,24 +479,25 @@ export default function HomeClient() {
           <button
             onClick={toggleMute}
             className={styles.controlBtn}
-            aria-label="Mute / Unmute"
+            aria-label={volume === 0 ? "Unmute" : "Mute"}
             type="button"
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 9v6h4l5 5V4L8 9H4z" />
-            </svg>
+            {volume === 0 ? (
+              // muted icon
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9v6h4l5 5V4L8 9H4z" />
+                <path d="M16 9l4 6" />
+                <path d="M20 9l-4 6" />
+              </svg>
+            ) : (
+              // sound icon
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9v6h4l5 5V4L8 9H4z" />
+                <path d="M16 8c1.5 1.5 1.5 6.5 0 8" />
+                <path d="M18.5 6c3 3 3 9 0 12" />
+              </svg>
+            )}
           </button>
-
-          <input
-            className={styles.volume}
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={(e) => handleVolume(e.target.value)}
-            aria-label="Volume"
-          />
         </div>
 
         <div className={styles.scrollHint} aria-hidden="true">
@@ -504,7 +527,8 @@ export default function HomeClient() {
                   } catch {}
                 }}
               >
-                <img src={p.thumb} alt={p.title} loading="lazy" />
+                <img src={p.thumb} alt={p.title} loading="lazy" {...noSaveProps} />
+                <div className={styles.noSaveLayer} />
 
                 <video
                   className={styles.previewVid}
@@ -555,7 +579,9 @@ export default function HomeClient() {
           {filteredStills.map((s) => (
             <div key={s.id} className={styles.stillCard}>
               <div className={styles.projectThumb}>
-                <img src={s.src} alt={s.alt} loading="lazy" />
+                <img src={s.src} alt={s.alt} loading="lazy" {...noSaveProps} />
+                <div className={styles.noSaveLayer} />
+
                 <div className={styles.cardOverlay} />
 
                 <button

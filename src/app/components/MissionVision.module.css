@@ -2,6 +2,9 @@
   background:#fff;
   color:#0b0b0b;
   padding: 70px 0;
+
+  /* 🔒 bloque sélection texte */
+  user-select: none;
 }
 
 .inner{
@@ -25,9 +28,23 @@
   box-shadow: 0 18px 60px rgba(0,0,0,0.08);
 }
 
+/* image */
 .img{
   object-fit: cover;
   transform: scale(1.02);
+
+  /* 🔒 anti drag */
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* 🔒 couche invisible au-dessus de l'image */
+.noSaveLayer{
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: transparent;
 }
 
 /* RIGHT */
@@ -80,7 +97,7 @@
   color: rgba(0,0,0,0.68);
 }
 
-/* divider like in the image */
+/* divider */
 .divider{
   height: 1px;
   width: 100%;
