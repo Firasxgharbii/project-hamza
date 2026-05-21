@@ -22,7 +22,6 @@ export default function ContactPage() {
       message: String(formData.get("message") || "").trim(),
     };
 
-    // ✅ Petite validation front
     if (!payload.email || !payload.message) {
       setStatus({
         type: "error",
@@ -71,7 +70,7 @@ export default function ContactPage() {
             <h1 className={styles.h1}>
               READY TO SHAPE YOUR STORY VISUALLY?
               <br />
-              LET’S CONNECT!
+              LET&apos;S CONNECT!
             </h1>
 
             <div className={styles.infoList}>
@@ -83,14 +82,16 @@ export default function ContactPage() {
               <div className={styles.infoRow}>
                 <div className={styles.icon}>✉</div>
                 <div className={styles.infoTitle}>
-                  <a href="mailto:mejdhamza25@gmail.com">mejdhamza25@gmail.com</a>
+                  <a href="mailto:contact@hamzamejd.com">
+                    contact@hamzamejd.com
+                  </a>
                 </div>
               </div>
             </div>
 
             <p className={styles.desc}>
-              Please fill out the form below and I’ll get back to you as soon as
-              possible.
+              Please fill out the form below and I&apos;ll get back to you as
+              soon as possible.
             </p>
 
             <form className={styles.form} onSubmit={onSubmit}>
@@ -158,7 +159,7 @@ export default function ContactPage() {
             </form>
           </section>
 
-          {/* RIGHT (PHOTO) */}
+          {/* RIGHT PHOTO */}
           <aside className={styles.right} aria-hidden="true">
             <div className={styles.photo} />
           </aside>

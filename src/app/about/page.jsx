@@ -6,12 +6,16 @@ import styles from "./about.module.css";
 import Footer from "../components/Footer";
 
 export default function AboutPage() {
-  const [videoSrc, setVideoSrc] = useState("https://res.cloudinary.com/dko1fpcic/video/upload/v1768872837/Aboutme2_fsgpqw.mp4");
+  // ✅ Vidéos locales dans /public
+  const DESKTOP_VIDEO = "/Aboutme2.mp4";
+  const MOBILE_VIDEO = "/Aboutmobile.mp4";
+
+  const [videoSrc, setVideoSrc] = useState(DESKTOP_VIDEO);
 
   useEffect(() => {
     const pickVideo = () => {
       const isMobile = window.matchMedia("(max-width: 1000px)").matches;
-      setVideoSrc(isMobile ? "https://res.cloudinary.com/dko1fpcic/video/upload/v1768872795/Aboutmobile_g4gwhv.mp4" : "https://res.cloudinary.com/dko1fpcic/video/upload/v1768872837/Aboutme2_fsgpqw.mp4");
+      setVideoSrc(isMobile ? MOBILE_VIDEO : DESKTOP_VIDEO);
     };
 
     pickVideo();
@@ -29,9 +33,18 @@ export default function AboutPage() {
         </Link>
 
         <nav className={styles.nav}>
-          <Link href="/#services" className={styles.navLink}>WORK</Link>
-          <Link href="/about" className={`${styles.navLink} ${styles.navActive}`}>ABOUT</Link>
-          <Link href="/contact" className={`${styles.navLink} ${styles.navCta}`}>CONTACT</Link>
+          <Link href="/#stills" className={styles.navLink}>
+            WORK
+          </Link>
+          <Link
+            href="/about"
+            className={`${styles.navLink} ${styles.navActive}`}
+          >
+            ABOUT
+          </Link>
+          <Link href="/contact" className={`${styles.navLink} ${styles.navCta}`}>
+            CONTACT
+          </Link>
           <span className={styles.navGlow} />
         </nav>
       </header>
@@ -39,7 +52,7 @@ export default function AboutPage() {
       {/* HERO */}
       <main className={styles.hero}>
         {/* VIDEO */}
-        <div className={styles.rightMedia} aria-hidden>
+        <div className={styles.rightMedia} aria-hidden="true">
           <video
             key={videoSrc}
             className={styles.video}
@@ -47,7 +60,7 @@ export default function AboutPage() {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
           >
             <source src={videoSrc} type="video/mp4" />
           </video>
@@ -66,31 +79,45 @@ export default function AboutPage() {
 
             <div className={styles.copy}>
               <p>
-                 Hamza Mejd is a filmmaker based in Canada, working as both a director and cinematographer across narrative, commercial, and branded projects.              </p>
+                Hamza Mejd is a filmmaker based in Canada, working as both a
+                director and cinematographer across narrative, commercial, and
+                branded projects.
+              </p>
 
               <p>
-He began his journey in filmmaking at an early age in Casablanca, Morocco, where directing and working with the camera developed side by side through hands-on practice.
-He later pursued professional film training in Morocco and Canada, building a strong foundation in directing, cinematography, mise-en-scène, and on-set workflow.              </p>
+                He began his journey in filmmaking at an early age in Casablanca,
+                Morocco, where directing and working with the camera developed
+                side by side through hands-on practice. He later pursued
+                professional film training in Morocco and Canada, building a
+                strong foundation in directing, cinematography, mise-en-scène,
+                and on-set workflow.
+              </p>
 
               <p>
-His work is driven by a unified approach to storytelling, where direction and image are conceived as a single creative language. A filmmaker with a unified approach to directing, cinematography, editing, and color grading, he develops performance, framing, color, and movement together to maintain a cohesive visual and narrative vision.              </p>
+                His work is driven by a unified approach to storytelling, where
+                direction and image are conceived as a single creative language.
+                A filmmaker with a unified approach to directing, cinematography,
+                editing, and color grading, he develops performance, framing,
+                color, and movement together to maintain a cohesive visual and
+                narrative vision.
+              </p>
 
               <p>
-                He uses mise-en-scène and cinematography as narrative tools to convey emotion and meaning, shaping stories through visual rhythm and cinematic composition. Hamza collaborates closely with creative teams to bring projects from concept to screen, crafting films where storytelling, direction, and image exist as one.
+                He uses mise-en-scène and cinematography as narrative tools to
+                convey emotion and meaning, shaping stories through visual rhythm
+                and cinematic composition. Hamza collaborates closely with
+                creative teams to bring projects from concept to screen, crafting
+                films where storytelling, direction, and image exist as one.
               </p>
             </div>
-
-            
 
             <div className={styles.divider} />
 
             <div className={styles.footerRow}>
-          
-
               <div>
                 <div className={styles.phone}>+1 (438) 535-4855</div>
-                <a className={styles.email} href="mailto:hamzamejd@gmail.com">
-                  mejdhamza25@gmail.com
+                <a className={styles.email} href="mailto:contact@hamzamejd.com">
+                  contact@hamzamejd.com
                 </a>
               </div>
             </div>

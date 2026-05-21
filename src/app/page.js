@@ -12,6 +12,7 @@ import Footer from "./components/Footer";
 
 const FILTERS = ["ALL", "FILMS", "COMMERCIAL", "MUSIC VIDEOS"];
 
+// ✅ vidéos locales (dans /public)
 const PROJECTS = [
   {
     id: 1,
@@ -19,8 +20,7 @@ const PROJECTS = [
     category: "FILMS",
     thumb: "/projects/p1.jpeg",
     href: "/contact",
-    previewVideo:
-      "https://res.cloudinary.com/dko1fpcic/video/upload/v1768872409/Yours1_fi1fpj.mp4",
+    previewVideo: "/Yours1.mp4",
   },
   {
     id: 2,
@@ -28,8 +28,7 @@ const PROJECTS = [
     category: "FILMS",
     thumb: "/projects/s3.jpg",
     href: "/contact",
-    previewVideo:
-      "https://res.cloudinary.com/dko1fpcic/video/upload/Alterer_ngdzuh.mp4",
+    previewVideo: "/Alterer.mp4",
   },
   {
     id: 3,
@@ -37,8 +36,7 @@ const PROJECTS = [
     category: "FILMS",
     thumb: "/projects/p3.jpeg",
     href: "/contact",
-    previewVideo:
-      "https://res.cloudinary.com/dko1fpcic/video/upload/v1768872573/Salope2_txelgt.mp4",
+    previewVideo: "/Salope2.mp4",
   },
 ];
 
@@ -160,9 +158,9 @@ export default function HomeClient() {
   const [volume, setVolume] = useState(0);
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [videoSrc, setVideoSrc] = useState(
-    "https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/version_pc_nws1e5.mp4"
-  );
+
+  // ✅ HERO vidéos locales compressées
+  const [videoSrc, setVideoSrc] = useState("/pc-web.mp4");
 
   const PINNED_STILLS = [1, 2, 3];
   const [favorites, setFavorites] = useState({});
@@ -205,14 +203,11 @@ export default function HomeClient() {
     setFavorites((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  // ✅ switch PC/Mobile vidéo locale (compressées)
   useEffect(() => {
     const pickVideo = () => {
       const isMobile = window.matchMedia("(max-width: 820px)").matches;
-      setVideoSrc(
-        isMobile
-          ? "https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/Version_mb_1920_nlju1q.mp4"
-          : "https://res.cloudinary.com/dko1fpcic/video/upload/v1768874946/version_pc_nws1e5.mp4"
-      );
+      setVideoSrc(isMobile ? "/mobile-web.mp4" : "/pc-web.mp4");
     };
 
     pickVideo();
@@ -220,7 +215,7 @@ export default function HomeClient() {
     return () => window.removeEventListener("resize", pickVideo);
   }, []);
 
-  // AUTOPLAY (mute obligatoire)
+  // ✅ AUTOPLAY (muted obligatoire)
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -229,8 +224,8 @@ export default function HomeClient() {
     v.volume = 0;
 
     v.load();
-    const p = v.play();
-    if (p?.catch) p.catch(() => {});
+    v.play().catch(() => {});
+
     setIsPlaying(true);
     setVolume(0);
   }, [videoSrc]);
@@ -244,7 +239,6 @@ export default function HomeClient() {
     const pinned = STILLS.filter((s) => PINNED_STILLS.includes(s.id));
     const rest = STILLS.filter((s) => !PINNED_STILLS.includes(s.id));
     return [...pinned, ...rest];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredStills = useMemo(() => {
@@ -265,7 +259,6 @@ export default function HomeClient() {
     }
   };
 
-  // UN SEUL bouton MUTE/UNMUTE
   const toggleMute = async () => {
     const v = videoRef.current;
     if (!v) return;
@@ -430,8 +423,9 @@ export default function HomeClient() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           key={videoSrc}
+          // poster="/poster.jpg" // optionnel si tu as un poster
         >
           <source src={videoSrc} type="video/mp4" />
         </video>
@@ -483,14 +477,12 @@ export default function HomeClient() {
             type="button"
           >
             {volume === 0 ? (
-              // muted icon
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 9v6h4l5 5V4L8 9H4z" />
                 <path d="M16 9l4 6" />
                 <path d="M20 9l-4 6" />
               </svg>
             ) : (
-              // sound icon
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 9v6h4l5 5V4L8 9H4z" />
                 <path d="M16 8c1.5 1.5 1.5 6.5 0 8" />
@@ -516,8 +508,8 @@ export default function HomeClient() {
                   const v = e.currentTarget.querySelector("video");
                   if (!v) return;
                   v.currentTime = 0;
-                  const playPromise = v.play();
-                  if (playPromise?.catch) playPromise.catch(() => {});
+                  v.load();
+                  v.play().catch(() => {});
                 }}
                 onMouseLeave={(e) => {
                   const v = e.currentTarget.querySelector("video");
@@ -527,7 +519,12 @@ export default function HomeClient() {
                   } catch {}
                 }}
               >
-                <img src={p.thumb} alt={p.title} loading="lazy" {...noSaveProps} />
+                <img
+                  src={p.thumb}
+                  alt={p.title}
+                  loading="lazy"
+                  {...noSaveProps}
+                />
                 <div className={styles.noSaveLayer} />
 
                 <video
@@ -588,7 +585,9 @@ export default function HomeClient() {
                   type="button"
                   className={styles.favBtn}
                   aria-label={
-                    favorites[`still-${s.id}`] ? "Remove favorite" : "Add favorite"
+                    favorites[`still-${s.id}`]
+                      ? "Remove favorite"
+                      : "Add favorite"
                   }
                   onClick={(e) => {
                     e.preventDefault();
